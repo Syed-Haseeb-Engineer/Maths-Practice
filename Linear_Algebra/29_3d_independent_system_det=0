@@ -1,0 +1,32 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Eq 1: x + y + z = 1  => z = 1 - x - y
+# Eq 2: x + y + z = 5  => z = 5 - x - y (Parallel to Eq 1)
+# Eq 3: x - y + z = 2  => z = 2 - x + y
+
+A = np.array([
+    [1,  1, 1],
+    [1,  1, 1], # Row 2 is exactly Row 1 (causes Det = 0)
+    [1, -1, 1]
+])
+
+print(f"Determinant of A: {np.linalg.det(A):.2f}")
+print("Because Det = 0, there is no single point where all 3 planes intersect!")
+
+x, y = np.meshgrid(np.linspace(-5, 5, 10), np.linspace(-5, 5, 10))
+
+z1 = 1 - x - y
+z2 = 5 - x - y
+z3 = 2 - x + y
+
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# Plot the surfaces
+ax.plot_surface(x, y, z1, alpha=0.5, color='blue', label='Eq 1')
+ax.plot_surface(x, y, z2, alpha=0.5, color='red', label='Eq 2 (Parallel)')
+ax.plot_surface(x, y, z3, alpha=0.3, color='green')
+
+ax.set_title("31. Dependent System (Det = 0) \nNotice the Red and Blue planes never touch!")
+plt.show()

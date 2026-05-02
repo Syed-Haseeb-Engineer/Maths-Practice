@@ -612,7 +612,7 @@ plt.show()
 
 # %%
 # %% 18. Determinant 3D (Volume)
-%matplotlib widget
+%matplotlib widget #this line is use to make interactive 3d instead of png
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -892,6 +892,8 @@ plt.show()
 # %% 29. Dependent System 3D (Det = 0, No Solution)
 from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'widget')
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 
