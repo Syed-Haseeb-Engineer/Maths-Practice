@@ -1083,3 +1083,173 @@ ax.set_title(f"Duality: Dot Product (Projection) = Matrix Transformation = {dot_
 ax.legend()
 plt.show()
 f# %%
+
+# %%
+# %% Chapter 10 & 11: The Cross Product
+%matplotlib widget
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Define two vectors in the XY plane
+v = np.array([3, 0, 0])
+w = np.array([0, 2, 0])
+
+# 2. Calculate the Cross Product
+cross_result = np.cross(v, w)
+
+# 3. Calculate the Area (Length of the cross product vector)
+area = np.linalg.norm(cross_result)
+
+print("--- Chapter 10: Cross Product ---")
+print(f"Vector v: {v}")
+print(f"Vector w: {w}")
+print(f"Cross Product (v x w): {cross_result}")
+print(f"Area of the Parallelogram: {area}")
+
+# --- VISUALIZATION ---
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# Plot original vectors
+ax.quiver(0, 0, 0, v[0], v[1], v[2], color='blue', lw=3, label='Vector v')
+ax.quiver(0, 0, 0, w[0], w[1], w[2], color='red', lw=3, label='Vector w')
+
+# Plot the Cross Product Vector
+ax.quiver(0, 0, 0, cross_result[0], cross_result[1], cross_result[2], color='green', lw=4, label='Cross Product (v x w)')
+
+# Draw the Parallelogram on the floor
+ax.plot([v[0], v[0]+w[0]], [v[1], v[1]+w[1]], [v[2], v[2]+w[2]], 'k--')
+ax.plot([w[0], v[0]+w[0]], [w[1], v[1]+w[1]], [w[2], v[2]+w[2]], 'k--')
+
+ax.set_xlim(0, 6); ax.set_ylim(0, 6); ax.set_zlim(0, 8)
+ax.set_title(f"Cross Product: Perpendicular Vector with Length = {area}")
+ax.legend()
+plt.show()
+
+
+
+# %%
+# %% Chapter 12: Cramer's Rule (Area Ratios)
+import numpy as np
+
+# Solve:
+# 2x + 1y = 4
+# 1x + 3y = 7
+A = np.array([[2, 1], 
+              [1, 3]])
+b = np.array([4, 7])
+
+# Step 1: Area of the base transformation
+det_A = np.linalg.det(A)
+
+# Step 2: Swap the First Column (X) with the Output Vector (b)
+A_x = np.copy(A)
+A_x[:, 0] = b  
+det_A_x = np.linalg.det(A_x)
+
+# Step 3: Swap the Second Column (Y) with the Output Vector (b)
+A_y = np.copy(A)
+A_y[:, 1] = b
+det_A_y = np.linalg.det(A_y)
+
+# Cramer's Math: Variable = (Swapped Area) / (Base Area)
+x = det_A_x / det_A
+y = det_A_y / det_A
+
+print("--- Chapter 12: Cramer's Rule ---")
+print(f"Base Area det(A): {det_A:.1f}")
+print(f"X-Swapped Area det(A_x): {det_A_x:.1f}  |  x = {det_A_x:.1f} / {det_A:.1f} = {x:.1f}")
+print(f"Y-Swapped Area det(A_y): {det_A_y:.1f}  |  y = {det_A_y:.1f} / {det_A:.1f} = {y:.1f}")
+
+# Verify with standard NumPy solver
+standard_solution = np.linalg.solve(A, b)
+print(f"\nVerification (np.linalg.solve): x={standard_solution[0]}, y={standard_solution[1]}")
+
+
+# %%
+# %% Chapter 13: Change of Basis
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Jennifer's Basis Vectors (Her language)
+# Her "Right" is [2, 1], Her "Up" is [-1, 1]
+basis_matrix = np.array([[2, -1], 
+                         [1,  1]])
+
+# 2. A vector Jennifer creates in HER language
+v_jennifer = np.array([1, 2]) # She goes 1 step "Right" and 2 steps "Up" in her world
+
+# 3. Translation! We multiply her coordinates by her basis matrix to find it in OUR world.
+v_ours = basis_matrix @ v_jennifer
+
+print("--- Chapter 13: Change of Basis ---")
+print(f"Jennifer's Coordinates: {v_jennifer}")
+print(f"Our Standard Coordinates: {v_ours}")
+
+# --- VISUALIZATION ---
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+# Plot 1: Jennifer's View of the World (Her basis vectors look standard to her)
+ax1.quiver(0, 0, 1, 0, angles='xy', scale_units='xy', scale=1, color='gray', label="Her Right")
+ax1.quiver(0, 0, 0, 1, angles='xy', scale_units='xy', scale=1, color='gray', label="Her Up")
+ax1.quiver(0, 0, v_jennifer[0], v_jennifer[1], angles='xy', scale_units='xy', scale=1, color='blue')
+ax1.set_title("How Jennifer sees her vector: [1, 2]")
+ax1.set_xlim(-1, 4); ax1.set_ylim(-1, 4); ax1.grid(True)
+
+# Plot 2: Our View of the Physical Space
+ax2.quiver(0, 0, basis_matrix[0,0], basis_matrix[1,0], angles='xy', scale_units='xy', scale=1, color='red', label="Her Right (In our space)")
+ax2.quiver(0, 0, basis_matrix[0,1], basis_matrix[1,1], angles='xy', scale_units='xy', scale=1, color='red', label="Her Up (In our space)")
+ax2.quiver(0, 0, v_ours[0], v_ours[1], angles='xy', scale_units='xy', scale=1, color='purple', lw=3)
+ax2.set_title("Where it actually is in OUR space: [0, 3]")
+ax2.set_xlim(-1, 4); ax2.set_ylim(-1, 4); ax2.grid(True)
+ax2.legend()
+plt.show()
+
+
+# %%
+# %% Chapter 14: Eigenvectors and Eigenvalues
+import numpy as np
+import matplotlib.pyplot as plt
+
+# A transformation matrix
+A = np.array([[3, 1], 
+              [0, 2]])
+
+# NumPy calculates the hidden Eigenvectors and Eigenvalues instantly
+eigenvalues, eigenvectors = np.linalg.eig(A)
+
+print("--- Chapter 14: Eigenvectors ---")
+for i in range(len(eigenvalues)):
+    print(f"Eigenvector {i+1}: {np.round(eigenvectors[:, i], 2)}  |  Stretches by Eigenvalue: {eigenvalues[i]:.1f}")
+
+# Let's test two vectors. 
+# 1. An actual Eigenvector (from NumPy's calculation)
+v_eigen = eigenvectors[:, 0] * 2  # Scaled up so we can see it clearly
+# 2. A random normal vector
+v_normal = np.array([1, 1])
+
+# Apply the transformation
+eigen_transformed = A @ v_eigen
+normal_transformed = A @ v_normal
+
+# --- VISUALIZATION ---
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+# Plot 1: The Normal Vector Journey
+# Draw its original span (the line it lives on)
+ax1.plot([-4, 4], [-4, 4], 'k--', alpha=0.3, label="Original Span")
+ax1.quiver(0, 0, v_normal[0], v_normal[1], angles='xy', scale_units='xy', scale=1, color='blue', label='Start')
+ax1.quiver(0, 0, normal_transformed[0], normal_transformed[1], angles='xy', scale_units='xy', scale=1, color='red', label='Transformed')
+ax1.set_title("Normal Vector: Knocked off its line!")
+ax1.set_xlim(-1, 5); ax1.set_ylim(-1, 5); ax1.grid(True); ax1.legend()
+
+# Plot 2: The Eigenvector Journey
+# Draw its span (it lies flat on the X-axis)
+ax1.plot([-5, 5], [0, 0], 'k--', alpha=0.3)
+ax2.quiver(0, 0, v_eigen[0], v_eigen[1], angles='xy', scale_units='xy', scale=1, color='blue', label='Start')
+ax2.quiver(0, 0, eigen_transformed[0], eigen_transformed[1], angles='xy', scale_units='xy', scale=1, color='green', alpha=0.5, lw=5, label='Transformed (Just stretched!)')
+ax2.set_title(f"Eigenvector: Stays on its line! (Scaled by {eigenvalues[0]:.1f})")
+ax2.set_xlim(-1, 7); ax2.set_ylim(-2, 2); ax2.grid(True); ax2.legend()
+
+plt.show()
+# %%
